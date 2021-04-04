@@ -11,5 +11,9 @@
     "next": "^10.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1"
+  },
+  "prettier": "@tylerjlawson/prettier",
+  "devDependencies": {
+    "@tylerjlawson/prettier": "^1.0.12"
   }
 }
