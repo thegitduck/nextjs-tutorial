@@ -6,7 +6,28 @@ import html from 'remark-html';
 
 const postsDirectory = path.join(process.cwd(), 'posts');
 
-export function getSortedPostsData() {
+export interface PostData {
+  /**
+   * date post was posted
+   */
+  date: string;
+  /**
+   * title of the post
+   */
+  title: string;
+  /**
+   * id to be used as path to navigate to post
+   */
+  id: string;
+}
+
+export interface PostDataWithContent extends PostData {
+  contentHtml: string;
+}
+
+type MatterData = Required<Pick<PostData, 'title' | 'date'>>;
+
+export const getSortedPostsData = (): PostData[] => {
   // Get file names under /posts
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map(fileName => {
@@ -19,18 +40,19 @@ export function getSortedPostsData() {
 
     // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
+    const matterData = matterResult.data as MatterData;
 
     // Combine the data with the id
     return {
       id,
-      ...matterResult.data
+      ...matterData
     };
   });
   // Sort posts by date
   return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
-}
+};
 
-export function getAllPostIds() {
+export const getAllPostIds = () => {
   const fileNames = fs.readdirSync(postsDirectory);
 
   // Returns an array that looks like this:
@@ -53,14 +75,15 @@ export function getAllPostIds() {
       }
     };
   });
-}
+};
 
-export async function getPostData(id) {
+export const getPostData = async (id: string): Promise<PostDataWithContent> => {
   const fullPath = path.join(postsDirectory, `${id}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
   // Use gray-matter to parse the post metadata section
   const matterResult = matter(fileContents);
+  const matterData = matterResult.data as MatterData;
 
   // Use remark to convert markdown into HTML string
   const processedContent = await remark()
@@ -72,6 +95,6 @@ export async function getPostData(id) {
   return {
     id,
     contentHtml,
-    ...matterResult.data
+    ...matterData
   };
-}
+};

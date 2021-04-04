@@ -7,7 +7,7 @@ import utilStyles from '../styles/utils.module.css';
 const name = 'Tyler';
 export const siteTitle = 'Next.js Sample Website';
 
-export default function Layout({ children, home }) {
+const Layout: React.FC<{ home?: boolean }> = ({ children, home }) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -70,4 +70,6 @@ export default function Layout({ children, home }) {
       )}
     </div>
   );
-}
+};
+
+export default Layout;
